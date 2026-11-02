@@ -1,0 +1,16 @@
+{
+  "name": "bingo",
+  "version": "1.0.0",
+  "description": "A complete, fully functional, polished 2-player browser game built with **HTML5**, **CSS3**, and **Vanilla JavaScript** (No external frameworks, No backend, No paid APIs). Designed with a premium casual mobile game aesthetic inspired by 3D block-puzzle games.",
+  "main": "script.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test_supabase_auth.js && node test_supabase_rpc_security.js && node test_supabase_two_clients.js && node test_join_room_flow.js && node test_all_buttons.js && node test_multiplayer.js && node test_multiplayer_win.js && node test_all_12_lines.js && node test_bingo_letter_crossing.js"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "ws": "^8.22.1"
+  }
+}

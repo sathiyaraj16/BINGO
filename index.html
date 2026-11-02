@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BINGO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background Pattern / Decorative Shapes -->
+  <div class="bg-decorations" aria-hidden="true">
+    <div class="decor-shape shape-1"></div>
+    <div class="decor-shape shape-2"></div>
+    <div class="decor-shape shape-3"></div>
+    <div class="decor-shape shape-4"></div>
+  </div>
+
+  <!-- Screen 1: Home / Welcome Screen -->
+  <main id="homeScreen" class="game-wrapper screen-active">
+    <div class="game-panel home-card">
+      <div class="logo-container">
+        <div class="bingo-badge-float">
+          <span class="letter-badge b">B</span>
+          <span class="letter-badge i">I</span>
+          <span class="letter-badge n">N</span>
+          <span class="letter-badge g">G</span>
+          <span class="letter-badge o">O</span>
+        </div>
+        <h1 class="game-title">BINGO!</h1>
+        <p class="game-subtitle">2-Player Number Challenge</p>
+      </div>
+
+      <!-- Hero Illustration / 3D Tile Graphic -->
+      <div class="home-hero-graphic" aria-hidden="true">
+        <div class="hero-tile hero-tile-1"><span>29</span></div>
+        <div class="hero-tile hero-tile-2 hero-marked"><span>04</span></div>
+        <div class="hero-tile hero-tile-3"><span>26</span></div>
+        <div class="hero-tile hero-tile-4 hero-marked"><span>02</span></div>
+      </div>
+
+      <div class="home-actions">
+        <!-- Online Real-Time Multiplayer Stack -->
+        <div class="online-button-stack">
+          <button id="btnCreateRoom" class="btn btn-online-create btn-3d btn-lg">
+            <span class="btn-icon">🏠</span> Create Room (Host)
+          </button>
+          <button id="btnJoinRoom" class="btn btn-online-join btn-3d btn-lg">
+            <span class="btn-icon">🔗</span> Join Room (Code)
+          </button>
+        </div>
+
+        <!-- Local Pass & Play and Help -->
+        <div class="secondary-button-stack">
+          <button id="btnPlayLocal" class="btn btn-secondary btn-3d">
+            <span class="btn-icon">📱</span> Pass &amp; Play (1 Phone)
+          </button>
+          <button id="btnHowToPlayHome" class="btn btn-secondary btn-3d">
+            <span class="btn-icon">📖</span> How to Play
+          </button>
+        </div>
+      </div>
+
+      <div class="home-features">
+        <div class="feature-tag">
+          <span class="feature-dot p1-dot"></span> Online 2-Phone Play
+        </div>
+        <div class="feature-tag">
+          <span class="feature-dot safe-dot"></span> 100% Private Boards
+        </div>
+        <div class="feature-tag">
+          <span class="feature-dot win-dot"></span> Real-Time Sync
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Screen 2: Main Game Screen -->
+  <div id="gameScreen" class="game-wrapper" style="display: none;">
+    <div class="game-panel">
+
+      <!-- Top Header: Title & Player Scoreboards -->
+      <header class="game-header">
+        <div class="header-top-row">
+          <div class="header-title-wrap">
+            <span class="header-mode-tag" id="gameModeTag">2-Player Match</span>
+            <h2 class="header-bingo-logo">BINGO</h2>
+          </div>
+
+          <!-- Real-Time Online Status Pill -->
+          <div id="onlineRoomPill" class="online-room-pill" style="display: none;" title="Online Multiplayer Room Status">
+            <span class="online-pulse-dot"></span>
+            <span id="onlineRoomCodeDisplay" class="online-room-code">ROOM: ------</span>
+            <span id="onlineUserRoleTag" class="online-role-tag">YOU: P1</span>
+          </div>
+
+          <div class="header-top-controls">
+            <button id="btnSoundToggle" class="circle-btn circle-btn-yellow" title="Toggle Sound FX" aria-label="Toggle Sound">
+              <svg id="soundIconOn" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+              </svg>
+              <svg id="soundIconOff" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="display: none;">
+                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+              </svg>
+            </button>
+            <button id="btnQuickHome" class="circle-btn circle-btn-teal" title="Back to Home" aria-label="Home">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Player 1 & Player 2 Score Cards + VS Badge -->
+        <div class="score-cards-container">
+          <!-- Player 1 Card (Purple) -->
+          <div id="player1Card" class="player-card card-p1 active-turn">
+            <div class="player-card-inner">
+              <div class="player-avatar-wrap">
+                <span class="player-avatar">P1</span>
+                <span class="turn-pulse-dot" title="Current Turn"></span>
+              </div>
+              <div class="player-details">
+                <div class="player-name">Player 1</div>
+                <div class="player-score-badge">
+                  <span class="score-label">Points:</span>
+                  <span id="p1Score" class="score-value">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="player-card-footer">
+              <span class="lines-label">Lines:</span>
+              <span id="p1LinesCount" class="lines-val">0/5</span>
+            </div>
+          </div>
+
+          <!-- VS Badge -->
+          <div class="vs-badge">
+            <div class="vs-circle">
+              <span class="vs-text">VS</span>
+            </div>
+            <div class="round-tracker" id="turnTracker">P1 TURN</div>
+          </div>
+
+          <!-- Player 2 Card (Teal) -->
+          <div id="player2Card" class="player-card card-p2">
+            <div class="player-card-inner">
+              <div class="player-avatar-wrap">
+                <span class="player-avatar">P2</span>
+                <span class="turn-pulse-dot" title="Current Turn"></span>
+              </div>
+              <div class="player-details">
+                <div class="player-name">Player 2</div>
+                <div class="player-score-badge">
+                  <span class="score-label">Points:</span>
+                  <span id="p2Score" class="score-value">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="player-card-footer">
+              <span class="lines-label">Lines:</span>
+              <span id="p2LinesCount" class="lines-val">0/5</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Opponent Disconnect Alert Banner -->
+      <div id="disconnectAlertBanner" class="disconnect-alert-banner" style="display: none;">
+        <span class="disconnect-icon">⚠️</span>
+        <span id="disconnectAlertText">Opponent temporarily disconnected. Waiting for reconnection...</span>
+      </div>
+
+      <!-- Center 3D Card Flipper Section -->
+      <section class="board-3d-scene">
+        <!-- Prominent BINGO Letters Banner for Active Board -->
+        <div class="bingo-header-rack">
+          <div class="bingo-rack-label">BINGO LINE PROGRESS</div>
+          <div class="bingo-letters-rack" id="bingoRack" aria-label="Bingo letters">
+            <div class="bingo-letter-box" data-letter="B">
+              <span class="letter-char">B</span>
+              <span class="strike-cross"></span>
+            </div>
+            <div class="bingo-letter-box" data-letter="I">
+              <span class="letter-char">I</span>
+              <span class="strike-cross"></span>
+            </div>
+            <div class="bingo-letter-box" data-letter="N">
+              <span class="letter-char">N</span>
+              <span class="strike-cross"></span>
+            </div>
+            <div class="bingo-letter-box" data-letter="G">
+              <span class="letter-char">G</span>
+              <span class="strike-cross"></span>
+            </div>
+            <div class="bingo-letter-box" data-letter="O">
+              <span class="letter-char">O</span>
+              <span class="strike-cross"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3D Flip Wrapper -->
+        <div class="flipper-container" id="flipperContainer">
+          <div class="card-flipper" id="cardFlipper">
+
+            <!-- Front Face: Player 1's Private Board -->
+            <div class="board-face board-face-p1" id="boardFaceP1">
+              <div class="board-container">
+                <div class="board-header-tag p1-tag">
+                  <span class="tag-dot"></span> Player 1's Private Card
+                </div>
+                <!-- Dark Brown Board Background with 5x5 Grid -->
+                <div class="dark-board-frame">
+                  <div class="bingo-grid" id="gridP1">
+                    <!-- 25 Tiles dynamically generated -->
+                  </div>
+                  <!-- SVG Overlay for Completed Directional Lines -->
+                  <svg class="line-overlay" id="overlayP1" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <!-- Lines drawn dynamically -->
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Back Face: Player 2's Private Board -->
+            <div class="board-face board-face-p2" id="boardFaceP2">
+              <div class="board-container">
+                <div class="board-header-tag p2-tag">
+                  <span class="tag-dot"></span> Player 2's Private Card
+                </div>
+                <!-- Dark Brown Board Background with 5x5 Grid -->
+                <div class="dark-board-frame">
+                  <div class="bingo-grid" id="gridP2">
+                    <!-- 25 Tiles dynamically generated -->
+                  </div>
+                  <!-- SVG Overlay for Completed Directional Lines -->
+                  <svg class="line-overlay" id="overlayP2" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <!-- Lines drawn dynamically -->
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Pass-the-Device Transition Overlay (shows briefly during flip) -->
+        <div class="flip-transition-curtain" id="flipCurtain">
+          <div class="curtain-content">
+            <div class="curtain-spinner"></div>
+            <div class="curtain-text" id="curtainText">Flipping to Player 2...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Selection & Turn Control Area Below Board -->
+      <section class="turn-control-area">
+        <div class="turn-indicator-pill" id="turnIndicatorPill">
+          <span class="turn-avatar" id="turnAvatar">P1</span>
+          <span class="turn-prompt" id="turnPrompt">Player 1: Tap an unmarked tile to call</span>
+        </div>
+
+        <div class="call-action-row">
+          <button type="button" id="btnSelectNumber" class="btn btn-select btn-3d btn-call-number">Call Number</button>
+        </div>
+
+        <!-- Message Banner for user feedback (validation/errors/tips) -->
+        <div class="status-message-banner" id="statusBanner">
+          <span class="status-icon" id="statusIcon">💡</span>
+          <span class="status-text" id="statusText">Tap any orange tile on your board to call it!</span>
+        </div>
+      </section>
+
+      <!-- Bottom Control Bar (matching reference image aesthetic) -->
+      <footer class="game-bottom-bar">
+        <div class="bottom-actions-left">
+          <button id="btnHomeFromGame" class="circle-btn circle-btn-teal" title="Main Menu" aria-label="Main Menu">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+          </button>
+          <button id="btnStats" class="circle-btn circle-btn-teal" title="Game Statistics" aria-label="Game Statistics">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/>
+            </svg>
+          </button>
+          <button id="btnHelp" class="circle-btn circle-btn-blue" title="How to Play" aria-label="How to Play">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-2h2v2zm1.07-7.75l-.9.92C12.45 11.9 12 12.5 12 14h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 .88-.36 1.68-.93 2.25z"/>
+            </svg>
+          </button>
+          <button id="btnRestart" class="circle-btn circle-btn-orange" title="Restart Game" aria-label="Restart Game">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="bottom-actions-right">
+          <div class="stat-pill-chip" title="Active player's completed lines">
+            <span class="chip-icon">🎯</span>
+            <span class="chip-label">Lines:</span>
+            <span class="chip-val" id="activeLinesChip">0/5</span>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- Winner Celebration Modal -->
+  <div id="winnerModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card winner-card">
+      <div class="winner-trophy-wrap">
+        <div class="trophy-glow"></div>
+        <div class="trophy-emoji">🏆</div>
+        <div class="winner-confetti-badge">BINGO!</div>
+      </div>
+
+      <h2 class="winner-title" id="winnerTitle">PLAYER 1 WINS!</h2>
+      <p class="winner-subtitle">Completed all 5 BINGO lines first!</p>
+
+      <div class="winner-score-grid">
+        <div class="winner-stat-box p1-stat">
+          <span class="stat-player-label">Player 1</span>
+          <span class="stat-score-num" id="winnerModalP1Score">0</span>
+          <span class="stat-sub" id="winnerModalP1Lines">0 Lines</span>
+        </div>
+        <div class="stat-divider-vs">VS</div>
+        <div class="winner-stat-box p2-stat">
+          <span class="stat-player-label">Player 2</span>
+          <span class="stat-score-num" id="winnerModalP2Score">0</span>
+          <span class="stat-sub" id="winnerModalP2Lines">0 Lines</span>
+        </div>
+      </div>
+
+      <!-- Separate Player Board Review Section -->
+      <section class="game-review-section" id="gameReviewSection" aria-label="Game Board Review">
+        <div class="review-section-header">
+          <h3 class="review-section-title">Match Board Review</h3>
+          <p class="review-section-desc">Review both players' private 5×5 boards and unmarked numbers below</p>
+        </div>
+
+        <!-- Filter Tabs for Both / Player 1 / Player 2 -->
+        <div class="review-tabs-bar" role="tablist">
+          <button type="button" class="review-tab-btn active" data-tab="both" id="tabReviewBoth">Both Players</button>
+          <button type="button" class="review-tab-btn" data-tab="p1" id="tabReviewP1">Player 1</button>
+          <button type="button" class="review-tab-btn" data-tab="p2" id="tabReviewP2">Player 2</button>
+        </div>
+
+        <div class="review-cards-container" id="reviewCardsContainer">
+          <!-- Player 1 Review Card -->
+          <div class="player-review-card p1-review-card" id="p1ReviewCard">
+            <div class="review-card-header">
+              <div class="review-player-info">
+                <span class="review-avatar p1-avatar">P1</span>
+                <div class="review-title-wrap">
+                  <h4 class="review-card-name">Player 1 Review</h4>
+                  <span class="review-card-role">Private 5×5 Board</span>
+                </div>
+              </div>
+              <span class="review-status-tag" id="p1ReviewStatusTag">WINNER</span>
+            </div>
+
+            <div class="review-metrics-row">
+              <div class="review-metric">
+                <span class="metric-label">Final Score</span>
+                <strong class="metric-val" id="p1ReviewScore">0 pts</strong>
+              </div>
+              <div class="metric-divider"></div>
+              <div class="review-metric">
+                <span class="metric-label">Lines</span>
+                <strong class="metric-val" id="p1ReviewLines">0 / 5</strong>
+              </div>
+              <div class="metric-divider"></div>
+              <div class="review-metric">
+                <span class="metric-label">Marked</span>
+                <strong class="metric-val" id="p1ReviewMarkedRatio">0 / 25</strong>
+              </div>
+            </div>
+
+            <div class="review-board-legend">
+              <span class="legend-item"><span class="legend-dot dot-green"></span> Marked</span>
+              <span class="legend-item"><span class="legend-dot dot-orange"></span> Unmarked</span>
+            </div>
+
+            <div class="review-board-frame">
+              <div class="review-board-grid" id="p1ReviewGrid"></div>
+            </div>
+
+            <div class="review-unmarked-box">
+              <div class="unmarked-header">
+                <span class="unmarked-badge-icon">📌</span>
+                <span class="unmarked-label" id="p1UnmarkedLabel">Unmarked Numbers:</span>
+              </div>
+              <div class="unmarked-raw-text" id="p1UnmarkedText">Unmarked Numbers: —</div>
+              <div class="unmarked-chips-list" id="p1UnmarkedChips"></div>
+            </div>
+          </div>
+
+          <!-- Player 2 Review Card -->
+          <div class="player-review-card p2-review-card" id="p2ReviewCard">
+            <div class="review-card-header">
+              <div class="review-player-info">
+                <span class="review-avatar p2-avatar">P2</span>
+                <div class="review-title-wrap">
+                  <h4 class="review-card-name">Player 2 Review</h4>
+                  <span class="review-card-role">Private 5×5 Board</span>
+                </div>
+              </div>
+              <span class="review-status-tag" id="p2ReviewStatusTag">LOSER</span>
+            </div>
+
+            <div class="review-metrics-row">
+              <div class="review-metric">
+                <span class="metric-label">Final Score</span>
+                <strong class="metric-val" id="p2ReviewScore">0 pts</strong>
+              </div>
+              <div class="metric-divider"></div>
+              <div class="review-metric">
+                <span class="metric-label">Lines</span>
+                <strong class="metric-val" id="p2ReviewLines">0 / 5</strong>
+              </div>
+              <div class="metric-divider"></div>
+              <div class="review-metric">
+                <span class="metric-label">Marked</span>
+                <strong class="metric-val" id="p2ReviewMarkedRatio">0 / 25</strong>
+              </div>
+            </div>
+
+            <div class="review-board-legend">
+              <span class="legend-item"><span class="legend-dot dot-green"></span> Marked</span>
+              <span class="legend-item"><span class="legend-dot dot-orange"></span> Unmarked</span>
+            </div>
+
+            <div class="review-board-frame">
+              <div class="review-board-grid" id="p2ReviewGrid"></div>
+            </div>
+
+            <div class="review-unmarked-box">
+              <div class="unmarked-header">
+                <span class="unmarked-badge-icon">📌</span>
+                <span class="unmarked-label" id="p2UnmarkedLabel">Unmarked Numbers:</span>
+              </div>
+              <div class="unmarked-raw-text" id="p2UnmarkedText">Unmarked Numbers: —</div>
+              <div class="unmarked-chips-list" id="p2UnmarkedChips"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="winner-actions">
+        <button id="btnRestartFromModal" class="btn btn-primary btn-3d btn-lg">
+          <span class="btn-icon">↺</span> Play Again
+        </button>
+        <button id="btnHomeFromModal" class="btn btn-secondary btn-3d">
+          <span class="btn-icon">⌂</span> Main Menu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help & Rules Modal -->
+  <div id="helpModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card help-card">
+      <div class="modal-header">
+        <h3 class="modal-title">How to Play BINGO</h3>
+        <button id="btnCloseHelp" class="modal-close-btn" aria-label="Close help">✕</button>
+      </div>
+
+      <div class="help-scroll-body">
+        <div class="help-step">
+          <div class="help-step-icon">1</div>
+          <div class="help-step-text">
+            <strong>2 Players &amp; Private Boards</strong>
+            <p>Player 1 and Player 2 each get 25 numbers (1 to 25) shuffled independently. Neither player can see the opponent's board!</p>
+          </div>
+        </div>
+
+        <div class="help-step">
+          <div class="help-step-icon">2</div>
+          <div class="help-step-text">
+            <strong>Strict Private Verbal Calling</strong>
+            <p>When Player 1 calls a number verbally (e.g. "I call 7!"), the card flips to Player 2 with NO visual hint, label, or popup revealing the number. Player 2 must independently find and click 7 on their board. After marking it, Player 2 verbally calls their number to Player 1!</p>
+          </div>
+        </div>
+
+        <div class="help-step">
+          <div class="help-step-icon">3</div>
+          <div class="help-step-text">
+            <strong>Complete 5 Winning Lines</strong>
+            <p>Mark rows (horizontal), columns (vertical), or diagonals. Every completed line strikes out one letter in <strong>B-I-N-G-O</strong> (❌).</p>
+          </div>
+        </div>
+
+        <div class="help-step">
+          <div class="help-step-icon">4</div>
+          <div class="help-step-text">
+            <strong>Scoring &amp; Winning</strong>
+            <p>Each valid number marked earns <strong>+1 point</strong>. The first player to cross all 5 letters (5 lines) wins the BINGO championship!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btnGotItHelp" class="btn btn-primary btn-3d full-width">
+          Got It, Let's Play!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Modal -->
+  <div id="statsModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card stats-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Match Statistics</h3>
+        <button id="btnCloseStats" class="modal-close-btn" aria-label="Close stats">✕</button>
+      </div>
+
+      <div class="stats-body" id="statsBody">
+        <div class="stats-row">
+          <span>Total Turns Played:</span>
+          <strong id="statTotalTurns">0</strong>
+        </div>
+        <div class="stats-row">
+          <span>Player 1 Marked Tiles:</span>
+          <strong id="statP1Marked">0 / 25</strong>
+        </div>
+        <div class="stats-row">
+          <span>Player 2 Marked Tiles:</span>
+          <strong id="statP2Marked">0 / 25</strong>
+        </div>
+        <div class="stats-row">
+          <span>Player 1 Lines Completed:</span>
+          <strong id="statP1Lines">0</strong>
+        </div>
+        <div class="stats-row">
+          <span>Player 2 Lines Completed:</span>
+          <strong id="statP2Lines">0</strong>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btnCloseStatsBtn" class="btn btn-primary btn-3d full-width">
+          Back to Game
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Real-Time Online Lobby Modal -->
+  <div id="lobbyModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card lobby-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Online Match Lobby</h3>
+        <button id="btnCloseLobby" class="modal-close-btn" aria-label="Close lobby">✕</button>
+      </div>
+
+      <div class="lobby-body">
+        <p class="lobby-desc">Share this Room Code with Player 2 to play on separate phones:</p>
+        
+        <!-- Big Room Code Display Box -->
+        <div class="room-code-display-wrap">
+          <span class="room-code-label">ROOM CODE</span>
+          <div class="room-code-badge" id="lobbyRoomCode">------</div>
+          <div class="room-code-actions">
+            <button id="btnCopyRoomCode" class="btn btn-sm btn-secondary btn-3d" type="button">
+              <span id="copyIcon">📋</span> Copy Code
+            </button>
+            <button id="btnShareRoomLink" class="btn btn-sm btn-primary btn-3d" type="button">
+              <span>📤</span> Share Link
+            </button>
+          </div>
+        </div>
+
+        <!-- Connection Status & Waiting Animation -->
+        <div class="lobby-status-pill" id="lobbyStatusPill">
+          <span class="pulse-indicator"></span>
+          <span id="lobbyStatusText">Waiting for Player 2 to join...</span>
+        </div>
+
+        <!-- Player Slots -->
+        <div class="lobby-players-grid">
+          <div class="lobby-player-slot slot-p1 connected">
+            <span class="slot-avatar p1-avatar">P1</span>
+            <div class="slot-info">
+              <strong id="lobbyP1Name">Player 1 (Host)</strong>
+              <span class="slot-status-text">🟢 Connected</span>
+            </div>
+          </div>
+          <div class="lobby-player-slot slot-p2" id="lobbyP2Slot">
+            <span class="slot-avatar p2-avatar">P2</span>
+            <div class="slot-info">
+              <strong id="lobbyP2Name">Player 2</strong>
+              <span class="slot-status-text" id="lobbyP2Status">⏳ Waiting to join...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer lobby-footer-actions">
+        <button id="btnStartGame" class="btn btn-primary btn-3d full-width" type="button" disabled style="display: none;">
+          <span>▶</span> Start Game
+        </button>
+        <button id="btnCancelLobby" class="btn btn-secondary btn-3d full-width" type="button">
+          Cancel &amp; Leave Room
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Join Room Modal -->
+  <div id="joinModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card join-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Join Online Room</h3>
+        <button id="btnCloseJoin" class="modal-close-btn" aria-label="Close join">✕</button>
+      </div>
+
+      <div class="join-body">
+        <p class="join-desc">Enter the 6-character Room Code from Player 1's phone:</p>
+
+        <div class="join-input-group">
+          <input 
+            type="text" 
+            id="joinRoomCodeInput" 
+            class="styled-room-input" 
+            placeholder="CODE" 
+            maxlength="6" 
+            autocomplete="off" 
+            autocapitalize="characters"
+            spellcheck="false"
+            aria-label="Room Code">
+        </div>
+
+        <div class="join-error-banner" id="joinErrorBanner" style="display: none;">
+          <span id="joinErrorText">Invalid room code</span>
+        </div>
+      </div>
+
+      <div class="modal-footer join-actions">
+        <button id="btnSubmitJoin" class="btn btn-primary btn-3d full-width" type="button">
+          Connect &amp; Play
+        </button>
+        <button id="btnCancelJoin" class="btn btn-secondary btn-3d full-width" type="button">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase / Backend Settings Modal -->
+  <div id="settingsModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card settings-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Cloud &amp; Backend Settings</h3>
+        <button id="btnCloseSettings" class="modal-close-btn" aria-label="Close settings">✕</button>
+      </div>
+
+      <div class="settings-body">
+        <p class="settings-desc">
+          BINGO supports both <strong>Local WebSocket Server</strong> (default) and <strong>Supabase Cloud</strong>.
+        </p>
+
+        <div class="backend-status-pill">
+          <span class="status-indicator-dot online"></span>
+          <span id="backendStatusLabel">Active: Local Node.js WebSocket</span>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="supabaseUrlInput">Supabase Project URL</label>
+          <input 
+            type="url" 
+            id="supabaseUrlInput" 
+            class="styled-settings-input" 
+            placeholder="https://xyzcompany.supabase.co" 
+            autocomplete="off"
+            spellcheck="false">
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label" for="supabaseKeyInput">Supabase Publishable (Anon) Key</label>
+          <input 
+            type="text" 
+            id="supabaseKeyInput" 
+            class="styled-settings-input" 
+            placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." 
+            autocomplete="off"
+            spellcheck="false">
+          <span class="settings-hint">⚠️ Never enter your service_role secret key. Only enter the public Anon key.</span>
+        </div>
+
+        <div class="settings-feedback" id="settingsFeedback" style="display: none;">
+          <span id="settingsFeedbackText"></span>
+        </div>
+
+        <div class="settings-action-row">
+          <button id="btnTestSupabase" class="btn btn-sm btn-secondary btn-3d" type="button">
+            🔍 Test Connection
+          </button>
+          <button id="btnSaveSupabase" class="btn btn-sm btn-primary btn-3d" type="button">
+            💾 Save Settings
+          </button>
+          <button id="btnClearSupabase" class="btn btn-sm btn-text" type="button">
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btnCloseSettingsBtn" class="btn btn-secondary btn-3d full-width" type="button">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confetti Canvas for Victory Animation -->
+  <canvas id="confettiCanvas" class="confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- Supabase JS Client & Modules -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
