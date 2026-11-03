@@ -45,20 +45,47 @@
         <!-- Online Real-Time Multiplayer Stack -->
         <div class="online-button-stack">
           <button id="btnCreateRoom" class="btn btn-online-create btn-3d btn-lg">
-            <span class="btn-icon">🏠</span> Create Room (Host)
+            <span class="btn-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
+                <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              </svg>
+            </span>
+            Create Room (Host)
           </button>
           <button id="btnJoinRoom" class="btn btn-online-join btn-3d btn-lg">
-            <span class="btn-icon">🔗</span> Join Room (Code)
+            <span class="btn-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+              </svg>
+            </span>
+            Join Room (Code)
           </button>
         </div>
 
         <!-- Local Pass & Play and Help -->
         <div class="secondary-button-stack">
           <button id="btnPlayLocal" class="btn btn-secondary btn-3d">
-            <span class="btn-icon">📱</span> Pass &amp; Play (1 Phone)
+            <span class="btn-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="6" x2="10" y1="12" y2="12"/>
+                <line x1="8" x2="8" y1="10" y2="14"/>
+                <line x1="15" x2="15.01" y1="13" y2="13"/>
+                <line x1="18" x2="18.01" y1="11" y2="11"/>
+                <rect width="20" height="12" x="2" y="6" rx="6"/>
+              </svg>
+            </span>
+            Pass &amp; Play (1 Phone)
           </button>
           <button id="btnHowToPlayHome" class="btn btn-secondary btn-3d">
-            <span class="btn-icon">📖</span> How to Play
+            <span class="btn-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 7v14"/>
+                <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>
+              </svg>
+            </span>
+            How to Play
           </button>
         </div>
       </div>
@@ -123,7 +150,7 @@
                 <span class="turn-pulse-dot" title="Current Turn"></span>
               </div>
               <div class="player-details">
-                <div class="player-name">Player 1</div>
+                <div class="player-name" id="p1PlayerName">Player 1</div>
                 <div class="player-score-badge">
                   <span class="score-label">Points:</span>
                   <span id="p1Score" class="score-value">0</span>
@@ -152,7 +179,7 @@
                 <span class="turn-pulse-dot" title="Current Turn"></span>
               </div>
               <div class="player-details">
-                <div class="player-name">Player 2</div>
+                <div class="player-name" id="p2PlayerName">Player 2</div>
                 <div class="player-score-badge">
                   <span class="score-label">Points:</span>
                   <span id="p2Score" class="score-value">0</span>
@@ -169,7 +196,13 @@
 
       <!-- Opponent Disconnect Alert Banner -->
       <div id="disconnectAlertBanner" class="disconnect-alert-banner" style="display: none;">
-        <span class="disconnect-icon">⚠️</span>
+        <span class="disconnect-icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/>
+            <line x1="12" x2="12" y1="9" y2="13"/>
+            <line x1="12" x2="12.01" y1="17" y2="17"/>
+          </svg>
+        </span>
         <span id="disconnectAlertText">Opponent temporarily disconnected. Waiting for reconnection...</span>
       </div>
 
@@ -209,7 +242,7 @@
             <!-- Front Face: Player 1's Private Board -->
             <div class="board-face board-face-p1" id="boardFaceP1">
               <div class="board-container">
-                <div class="board-header-tag p1-tag">
+                <div class="board-header-tag p1-tag" id="p1BoardTag">
                   <span class="tag-dot"></span> Player 1's Private Card
                 </div>
                 <!-- Dark Brown Board Background with 5x5 Grid -->
@@ -228,7 +261,7 @@
             <!-- Back Face: Player 2's Private Board -->
             <div class="board-face board-face-p2" id="boardFaceP2">
               <div class="board-container">
-                <div class="board-header-tag p2-tag">
+                <div class="board-header-tag p2-tag" id="p2BoardTag">
                   <span class="tag-dot"></span> Player 2's Private Card
                 </div>
                 <!-- Dark Brown Board Background with 5x5 Grid -->
@@ -269,7 +302,13 @@
 
         <!-- Message Banner for user feedback (validation/errors/tips) -->
         <div class="status-message-banner" id="statusBanner">
-          <span class="status-icon" id="statusIcon">💡</span>
+          <span class="status-icon" id="statusIcon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" x2="12" y1="16" y2="12"/>
+              <line x1="12" x2="12.01" y1="8" y2="8"/>
+            </svg>
+          </span>
           <span class="status-text" id="statusText">Tap any orange tile on your board to call it!</span>
         </div>
       </section>
@@ -301,7 +340,13 @@
 
         <div class="bottom-actions-right">
           <div class="stat-pill-chip" title="Active player's completed lines">
-            <span class="chip-icon">🎯</span>
+            <span class="chip-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="6"/>
+                <circle cx="12" cy="12" r="2"/>
+              </svg>
+            </span>
             <span class="chip-label">Lines:</span>
             <span class="chip-val" id="activeLinesChip">0/5</span>
           </div>
@@ -316,7 +361,16 @@
     <div class="modal-card winner-card">
       <div class="winner-trophy-wrap">
         <div class="trophy-glow"></div>
-        <div class="trophy-emoji">🏆</div>
+        <div class="trophy-emoji" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="trophy-svg">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+            <path d="M4 22h16"/>
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+          </svg>
+        </div>
         <div class="winner-confetti-badge">BINGO!</div>
       </div>
 
@@ -325,13 +379,13 @@
 
       <div class="winner-score-grid">
         <div class="winner-stat-box p1-stat">
-          <span class="stat-player-label">Player 1</span>
+          <span class="stat-player-label" id="winnerP1Label">Player 1</span>
           <span class="stat-score-num" id="winnerModalP1Score">0</span>
           <span class="stat-sub" id="winnerModalP1Lines">0 Lines</span>
         </div>
         <div class="stat-divider-vs">VS</div>
         <div class="winner-stat-box p2-stat">
-          <span class="stat-player-label">Player 2</span>
+          <span class="stat-player-label" id="winnerP2Label">Player 2</span>
           <span class="stat-score-num" id="winnerModalP2Score">0</span>
           <span class="stat-sub" id="winnerModalP2Lines">0 Lines</span>
         </div>
@@ -358,7 +412,7 @@
               <div class="review-player-info">
                 <span class="review-avatar p1-avatar">P1</span>
                 <div class="review-title-wrap">
-                  <h4 class="review-card-name">Player 1 Review</h4>
+                  <h4 class="review-card-name" id="p1ReviewCardName">Player 1 Review</h4>
                   <span class="review-card-role">Private 5×5 Board</span>
                 </div>
               </div>
@@ -393,7 +447,12 @@
 
             <div class="review-unmarked-box">
               <div class="unmarked-header">
-                <span class="unmarked-badge-icon">📌</span>
+                <span class="unmarked-badge-icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" x2="12" y1="17" y2="22"/>
+                    <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
+                  </svg>
+                </span>
                 <span class="unmarked-label" id="p1UnmarkedLabel">Unmarked Numbers:</span>
               </div>
               <div class="unmarked-raw-text" id="p1UnmarkedText">Unmarked Numbers: —</div>
@@ -407,7 +466,7 @@
               <div class="review-player-info">
                 <span class="review-avatar p2-avatar">P2</span>
                 <div class="review-title-wrap">
-                  <h4 class="review-card-name">Player 2 Review</h4>
+                  <h4 class="review-card-name" id="p2ReviewCardName">Player 2 Review</h4>
                   <span class="review-card-role">Private 5×5 Board</span>
                 </div>
               </div>
@@ -442,7 +501,12 @@
 
             <div class="review-unmarked-box">
               <div class="unmarked-header">
-                <span class="unmarked-badge-icon">📌</span>
+                <span class="unmarked-badge-icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" x2="12" y1="17" y2="22"/>
+                    <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
+                  </svg>
+                </span>
                 <span class="unmarked-label" id="p2UnmarkedLabel">Unmarked Numbers:</span>
               </div>
               <div class="unmarked-raw-text" id="p2UnmarkedText">Unmarked Numbers: —</div>
@@ -454,10 +518,22 @@
 
       <div class="winner-actions">
         <button id="btnRestartFromModal" class="btn btn-primary btn-3d btn-lg">
-          <span class="btn-icon">↺</span> Play Again
+          <span class="btn-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+          </span>
+          Play Again
         </button>
         <button id="btnHomeFromModal" class="btn btn-secondary btn-3d">
-          <span class="btn-icon">⌂</span> Main Menu
+          <span class="btn-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
+              <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            </svg>
+          </span>
+          Main Menu
         </button>
       </div>
     </div>
@@ -468,7 +544,9 @@
     <div class="modal-card help-card">
       <div class="modal-header">
         <h3 class="modal-title">How to Play BINGO</h3>
-        <button id="btnCloseHelp" class="modal-close-btn" aria-label="Close help">✕</button>
+        <button id="btnCloseHelp" class="modal-close-btn" aria-label="Close help">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
       </div>
 
       <div class="help-scroll-body">
@@ -492,7 +570,7 @@
           <div class="help-step-icon">3</div>
           <div class="help-step-text">
             <strong>Complete 5 Winning Lines</strong>
-            <p>Mark rows (horizontal), columns (vertical), or diagonals. Every completed line strikes out one letter in <strong>B-I-N-G-O</strong> (❌).</p>
+            <p>Mark rows (horizontal), columns (vertical), or diagonals. Every completed line strikes out one letter in <strong>B-I-N-G-O</strong>.</p>
           </div>
         </div>
 
@@ -518,7 +596,9 @@
     <div class="modal-card stats-card">
       <div class="modal-header">
         <h3 class="modal-title">Match Statistics</h3>
-        <button id="btnCloseStats" class="modal-close-btn" aria-label="Close stats">✕</button>
+        <button id="btnCloseStats" class="modal-close-btn" aria-label="Close stats">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
       </div>
 
       <div class="stats-body" id="statsBody">
@@ -557,7 +637,9 @@
     <div class="modal-card lobby-card">
       <div class="modal-header">
         <h3 class="modal-title">Online Match Lobby</h3>
-        <button id="btnCloseLobby" class="modal-close-btn" aria-label="Close lobby">✕</button>
+        <button id="btnCloseLobby" class="modal-close-btn" aria-label="Close lobby">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
       </div>
 
       <div class="lobby-body">
@@ -569,10 +651,25 @@
           <div class="room-code-badge" id="lobbyRoomCode">------</div>
           <div class="room-code-actions">
             <button id="btnCopyRoomCode" class="btn btn-sm btn-secondary btn-3d" type="button">
-              <span id="copyIcon">📋</span> Copy Code
+              <span id="copyIcon" class="btn-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                </svg>
+              </span>
+              Copy Code
             </button>
             <button id="btnShareRoomLink" class="btn btn-sm btn-primary btn-3d" type="button">
-              <span>📤</span> Share Link
+              <span class="btn-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="18" cy="5" r="3"/>
+                  <circle cx="6" cy="12" r="3"/>
+                  <circle cx="18" cy="19" r="3"/>
+                  <line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/>
+                  <line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>
+                </svg>
+              </span>
+              Share Link
             </button>
           </div>
         </div>
@@ -589,14 +686,26 @@
             <span class="slot-avatar p1-avatar">P1</span>
             <div class="slot-info">
               <strong id="lobbyP1Name">Player 1 (Host)</strong>
-              <span class="slot-status-text">🟢 Connected</span>
+              <span class="slot-status-text">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="m9 12 2 2 4-4"/>
+                </svg>
+                Connected
+              </span>
             </div>
           </div>
           <div class="lobby-player-slot slot-p2" id="lobbyP2Slot">
             <span class="slot-avatar p2-avatar">P2</span>
             <div class="slot-info">
               <strong id="lobbyP2Name">Player 2</strong>
-              <span class="slot-status-text" id="lobbyP2Status">⏳ Waiting to join...</span>
+              <span class="slot-status-text" id="lobbyP2Status">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Waiting to join...
+              </span>
             </div>
           </div>
         </div>
@@ -604,9 +713,19 @@
 
       <div class="modal-footer lobby-footer-actions">
         <button id="btnStartGame" class="btn btn-primary btn-3d full-width" type="button" disabled style="display: none;">
-          <span>▶</span> Start Game
+          <span class="btn-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="6 3 20 12 6 21 6 3"/>
+            </svg>
+          </span>
+          Start Game
         </button>
         <button id="btnCancelLobby" class="btn btn-secondary btn-3d full-width" type="button">
+          <span class="btn-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+            </svg>
+          </span>
           Cancel &amp; Leave Room
         </button>
       </div>
@@ -618,7 +737,9 @@
     <div class="modal-card join-card">
       <div class="modal-header">
         <h3 class="modal-title">Join Online Room</h3>
-        <button id="btnCloseJoin" class="modal-close-btn" aria-label="Close join">✕</button>
+        <button id="btnCloseJoin" class="modal-close-btn" aria-label="Close join">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
       </div>
 
       <div class="join-body">
@@ -644,6 +765,12 @@
 
       <div class="modal-footer join-actions">
         <button id="btnSubmitJoin" class="btn btn-primary btn-3d full-width" type="button">
+          <span class="btn-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+          </span>
           Connect &amp; Play
         </button>
         <button id="btnCancelJoin" class="btn btn-secondary btn-3d full-width" type="button">
@@ -658,7 +785,9 @@
     <div class="modal-card settings-card">
       <div class="modal-header">
         <h3 class="modal-title">Cloud &amp; Backend Settings</h3>
-        <button id="btnCloseSettings" class="modal-close-btn" aria-label="Close settings">✕</button>
+        <button id="btnCloseSettings" class="modal-close-btn" aria-label="Close settings">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
       </div>
 
       <div class="settings-body">
@@ -691,7 +820,14 @@
             placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." 
             autocomplete="off"
             spellcheck="false">
-          <span class="settings-hint">⚠️ Never enter your service_role secret key. Only enter the public Anon key.</span>
+          <span class="settings-hint">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align: -2px; margin-right: 4px;">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/>
+              <line x1="12" x2="12" y1="9" y2="13"/>
+              <line x1="12" x2="12.01" y1="17" y2="17"/>
+            </svg>
+            Never enter your service_role secret key. Only enter the public Anon key.
+          </span>
         </div>
 
         <div class="settings-feedback" id="settingsFeedback" style="display: none;">
@@ -700,10 +836,23 @@
 
         <div class="settings-action-row">
           <button id="btnTestSupabase" class="btn btn-sm btn-secondary btn-3d" type="button">
-            🔍 Test Connection
+            <span class="btn-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.3-4.3"/>
+              </svg>
+            </span>
+            Test Connection
           </button>
           <button id="btnSaveSupabase" class="btn btn-sm btn-primary btn-3d" type="button">
-            💾 Save Settings
+            <span class="btn-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+                <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/>
+                <path d="M7 3v4a1 1 0 0 0 1 1h7"/>
+              </svg>
+            </span>
+            Save Settings
           </button>
           <button id="btnClearSupabase" class="btn btn-sm btn-text" type="button">
             Clear

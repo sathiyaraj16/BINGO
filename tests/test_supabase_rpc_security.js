@@ -11,8 +11,12 @@ const assert = require('assert');
 console.log('--- Starting Supabase Security Architecture & RPC Validation Audit ---');
 
 // 1. Inspect SQL Migration Files
-const schemaPath = path.join(__dirname, 'supabase_schema.sql');
-const migrationPath = path.join(__dirname, 'supabase', 'migrations', '20261102000000_create_bingo_multiplayer.sql');
+const schemaPath = fs.existsSync(path.join(__dirname, '..', 'supabase_schema.sql'))
+  ? path.join(__dirname, '..', 'supabase_schema.sql')
+  : path.join(__dirname, 'supabase_schema.sql');
+const migrationPath = fs.existsSync(path.join(__dirname, '..', 'supabase', 'migrations', '20261102000000_create_bingo_multiplayer.sql'))
+  ? path.join(__dirname, '..', 'supabase', 'migrations', '20261102000000_create_bingo_multiplayer.sql')
+  : path.join(__dirname, 'supabase', 'migrations', '20261102000000_create_bingo_multiplayer.sql');
 
 console.log('1. Checking migration file existence and parity...');
 assert(fs.existsSync(schemaPath), 'supabase_schema.sql must exist');
@@ -122,7 +126,7 @@ console.log('✓ Review calculation produces sorted unmarked numbers for both pl
 
 // 6. Test Supabase Client Module (supabase.js) Integration
 console.log('6. Testing Supabase Client Module Methods...');
-const BingoSupabase = require('./supabase.js');
+const BingoSupabase = require('../supabase.js');
 
 assert(typeof BingoSupabase.testConnection === 'function', 'testConnection must be a function');
 assert(typeof BingoSupabase.createRoom === 'function', 'createRoom must be a function');

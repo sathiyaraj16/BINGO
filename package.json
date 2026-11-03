@@ -5,7 +5,8 @@
   "main": "script.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node test_supabase_auth.js && node test_supabase_rpc_security.js && node test_supabase_two_clients.js && node test_join_room_flow.js && node test_all_buttons.js && node test_multiplayer.js && node test_multiplayer_win.js && node test_all_12_lines.js && node test_bingo_letter_crossing.js"
+    "test": "node tests/test_supabase_auth.js && node tests/test_supabase_rpc_security.js && node tests/test_supabase_two_clients.js && node tests/test_join_room_flow.js && node tests/test_all_buttons.js && node tests/test_multiplayer.js && node tests/test_multiplayer_win.js && node tests/test_all_12_lines.js && node tests/test_bingo_letter_crossing.js && node tests/test_relative_player_labels.js",
+    "test:live": "node tests/verify_live_supabase.js"
   },
   "keywords": [],
   "type": "commonjs",

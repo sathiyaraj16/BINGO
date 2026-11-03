@@ -1,7 +1,7 @@
 /**
  * Test Supabase Authentication & Connectivity
  */
-const BingoSupabase = require('./supabase.js');
+const BingoSupabase = require('../supabase.js');
 
 async function testSupabase() {
   console.log('--- Testing Supabase Connection ---');

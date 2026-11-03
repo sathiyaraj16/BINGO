@@ -1,13 +1,27 @@
+# Environment secrets
+.env
+.env.*
+!.env.example
+
 # Dependencies
 node_modules/
-package-lock.json
 
-# Environment variables & credentials
-.env
-.env.local
-.env.*.local
-
-# Logs and system files
+# Logs
 *.log
+npm-debug.log*
+
+# Test artifacts
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS files
 .DS_Store
 Thumbs.db
+
+# IDE
+.vscode/
+.idea/

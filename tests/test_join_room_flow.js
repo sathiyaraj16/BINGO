@@ -6,8 +6,12 @@
 const { createClient } = require('@supabase/supabase-js');
 const assert = require('assert');
 const fs = require('fs');
+const path = require('path');
 
-const envContent = fs.readFileSync('.env', 'utf8');
+const envPath = fs.existsSync(path.join(__dirname, '..', '.env'))
+  ? path.join(__dirname, '..', '.env')
+  : path.join(process.cwd(), '.env');
+const envContent = fs.readFileSync(envPath, 'utf8');
 const urlMatch = envContent.match(/SUPABASE_URL=(.*)/);
 const keyMatch = envContent.match(/SUPABASE_ANON_KEY=(.*)/);
 
@@ -141,10 +145,14 @@ async function runJoinFlowTest() {
   // Cleanup
   await client1.rpc('bingo_leave_room', { p_room_code: roomCode, p_token: hostToken });
   channel.unsubscribe();
+  if (client1.realtime) client1.realtime.disconnect();
+  if (client2.realtime) client2.realtime.disconnect();
+  if (client3.realtime) client3.realtime.disconnect();
 
   console.log('\n======================================================');
   console.log(' ALL JOIN ROOM BUG INVESTIGATION & FLOW TESTS PASSED! 🎉');
   console.log('======================================================');
+  process.exit(0);
 }
 
 runJoinFlowTest().catch(err => {

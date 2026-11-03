@@ -10,7 +10,7 @@ process.env.PORT = PORT;
 process.env.HOST = '127.0.0.1';
 
 // Require the server (it will start listening on PORT 3456)
-require('./server.js');
+require('../server.js');
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

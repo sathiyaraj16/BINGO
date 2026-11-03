@@ -371,6 +371,28 @@
       this.updateSoundToggleUI();
     }
 
+    get myPlayerNum() {
+      if (this._myPlayerNum) return this._myPlayerNum;
+      if (this.online && this.online.playerNum) return this.online.playerNum;
+      try {
+        if (typeof sessionStorage !== 'undefined') {
+          const stored = sessionStorage.getItem('bingo_session');
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (parsed.myPlayerNum) return parsed.myPlayerNum;
+            if (parsed.playerNum) return parsed.playerNum;
+          }
+        }
+      } catch (e) {}
+      return 1;
+    }
+
+    set myPlayerNum(val) {
+      this._myPlayerNum = val;
+      if (!this.online) this.online = {};
+      this.online.playerNum = val;
+    }
+
     cacheDOMElements() {
       // Screens
       this.homeScreen = document.getElementById('homeScreen');
@@ -388,6 +410,10 @@
       // Header & Scores
       this.player1Card = document.getElementById('player1Card');
       this.player2Card = document.getElementById('player2Card');
+      this.p1PlayerName = document.getElementById('p1PlayerName');
+      this.p2PlayerName = document.getElementById('p2PlayerName');
+      this.p1BoardTag = document.getElementById('p1BoardTag');
+      this.p2BoardTag = document.getElementById('p2BoardTag');
       this.p1ScoreEl = document.getElementById('p1Score');
       this.p2ScoreEl = document.getElementById('p2Score');
       this.p1LinesCountEl = document.getElementById('p1LinesCount');
@@ -444,8 +470,14 @@
       this.statP2Lines = document.getElementById('statP2Lines');
 
       // Separate Player Board Review Elements
+      this.winnerP1Label = document.getElementById('winnerP1Label');
+      this.winnerP2Label = document.getElementById('winnerP2Label');
+      this.tabReviewP1 = document.getElementById('tabReviewP1');
+      this.tabReviewP2 = document.getElementById('tabReviewP2');
       this.p1ReviewCard = document.getElementById('p1ReviewCard');
       this.p2ReviewCard = document.getElementById('p2ReviewCard');
+      this.p1ReviewCardName = document.getElementById('p1ReviewCardName');
+      this.p2ReviewCardName = document.getElementById('p2ReviewCardName');
       this.p1ReviewGrid = document.getElementById('p1ReviewGrid');
       this.p2ReviewGrid = document.getElementById('p2ReviewGrid');
       this.p1ReviewStatusTag = document.getElementById('p1ReviewStatusTag');
@@ -843,8 +875,9 @@
       this.updateScoresUI();
       this.updateTurnUI();
       this.updateBingoLettersUI();
+      this.updatePlayerLabelsUI();
       this.updateControlsForCall();
-      this.setStatus("Player 1's turn! Tap any orange tile (1–25) to call your first number.", 'info');
+      this.setStatus("YOU (PLAYER 1)'s turn! Tap any orange tile (1–25) to call your first number.", 'info');
 
       this.sound.playPop(480);
     }
@@ -915,13 +948,15 @@
       if (this.turnPhase === 'MARK_CALLED' && this.pendingCalledNumber !== null) {
         if (player.marked[index]) {
           this.sound.playError();
-          this.setStatus(`Number ${number} is already marked! Tap the number called verbally by your opponent.`, 'error');
+          const oppNum = this.currentPlayer === 1 ? 2 : 1;
+          this.setStatus(`Number ${number} is already marked! Tap the number called verbally by OPPONENT (PLAYER ${oppNum}).`, 'error');
           return;
         }
 
         if (number !== this.pendingCalledNumber) {
           this.sound.playError();
-          this.setStatus(`Incorrect number! Listen to the number called verbally by your opponent and tap it.`, 'error');
+          const oppNum = this.currentPlayer === 1 ? 2 : 1;
+          this.setStatus(`Incorrect number! Listen to the number called verbally by OPPONENT (PLAYER ${oppNum}) and tap it.`, 'error');
           return;
         }
 
@@ -1007,14 +1042,14 @@
       if (this.turnPhase === 'MARK_CALLED' && this.pendingCalledNumber !== null) {
         this.sound.playError();
         const opponentNum = this.currentPlayer === 1 ? 2 : 1;
-        this.setStatus(`Player ${this.currentPlayer}: First tap and mark the number called by Player ${opponentNum}!`, 'error');
+        this.setStatus(`YOU (PLAYER ${this.currentPlayer}): First tap and mark the number called by OPPONENT (PLAYER ${opponentNum})!`, 'error');
         return;
       }
 
       // In CALL phase: active player must tap an unmarked tile to call
       if (!this.selectedTileNumber) {
         this.sound.playError();
-        this.setStatus(`Player ${this.currentPlayer}: Please tap an unmarked tile on your board to call it!`, 'error');
+        this.setStatus(`YOU (PLAYER ${this.currentPlayer}): Please tap an unmarked tile on your board to call it!`, 'error');
         return;
       }
 
@@ -1088,9 +1123,10 @@
       this.updateControlsForCall();
       if (newlyCompletedLines.length > 0) {
         const letter = 'BINGO'[player.completedLines.length - 1];
-        this.setStatus(`🎉 Line Completed! Letter "${letter}" crossed out! Now choose an unmarked tile to call your number.`, 'success');
+        this.setStatus(`Line Completed! Letter "${letter}" crossed out! Now choose an unmarked tile to call your number.`, 'success');
       } else {
-        this.setStatus(`Number ${number} marked! (+1 Pt). Tell your opponent your chosen number and tap it to mark.`, 'success');
+        const oppNum = activePlayerNum === 1 ? 2 : 1;
+        this.setStatus(`Number ${number} marked! (+1 Pt). Tell OPPONENT (PLAYER ${oppNum}) your chosen number and tap it to mark.`, 'success');
       }
     }
 
@@ -1111,7 +1147,7 @@
       const tileIndex = player.board.indexOf(number);
       if (tileIndex === -1) {
         this.sound.playError();
-        this.setStatus(`Number ${number} is not found on Player ${activePlayerNum}'s card!`, 'error');
+        this.setStatus(`Number ${number} is not found on YOU (PLAYER ${activePlayerNum})'s card!`, 'error');
         return;
       }
 
@@ -1177,7 +1213,8 @@
 
       if (newlyCompletedLines.length > 0) {
         const letter = 'BINGO'[player.completedLines.length - 1];
-        this.setStatus(`🎉 Line Completed! Letter "${letter}" crossed out! Passing turn to opponent...`, 'success');
+        const nextPlayer = activePlayerNum === 1 ? 2 : 1;
+        this.setStatus(`Line Completed! Letter "${letter}" crossed out! Passing turn to OPPONENT (PLAYER ${nextPlayer})...`, 'success');
         setTimeout(() => {
           this.performCardFlip();
         }, 750);
@@ -1227,7 +1264,7 @@
       this.btnSelectNumber.disabled = true;
 
       const nextPlayer = this.currentPlayer === 1 ? 2 : 1;
-      this.curtainText.textContent = `Flipping to Player ${nextPlayer}...\nPass device to Player ${nextPlayer}`;
+      this.curtainText.textContent = `Flipping to Player ${nextPlayer}...\nPass device to YOU (PLAYER ${nextPlayer})`;
       this.flipCurtain.classList.add('curtain-show');
 
       this.sound.playFlip();
@@ -1245,6 +1282,7 @@
         this.updateScoresUI();
         this.updateTurnUI();
         this.updateBingoLettersUI();
+        this.updatePlayerLabelsUI();
       }, 350);
 
       // Finish flip transition (at 700ms)
@@ -1254,7 +1292,8 @@
         this.btnSelectNumber.disabled = false;
         this.updateControlsForMarkCalled();
         const opponentNum = this.currentPlayer === 1 ? 2 : 1;
-        this.setStatus(`Player ${this.currentPlayer}: Listen to Player ${opponentNum}'s verbal call and tap that number on your board.`, 'info');
+        this.setStatus(`YOU (PLAYER ${this.currentPlayer}): Listen to OPPONENT (PLAYER ${opponentNum})'s verbal call and tap that number on your board.`, 'info');
+        this.updatePlayerLabelsUI();
       }, 700);
     }
 
@@ -1264,8 +1303,12 @@
      */
     updateControlsForMarkCalled() {
       this.btnSelectNumber.textContent = 'Call Number';
-      const opponentNum = this.currentPlayer === 1 ? 2 : 1;
-      this.turnPrompt.textContent = `Player ${this.currentPlayer}: Mark the number called by Player ${opponentNum}`;
+      if (this.gameMode === 'online') {
+        this.turnPrompt.textContent = "Your Turn: Listen to opponent's verbal call & tap that number";
+      } else {
+        const opponentNum = this.currentPlayer === 1 ? 2 : 1;
+        this.turnPrompt.textContent = `YOU (PLAYER ${this.currentPlayer}): Mark the number called by OPPONENT (PLAYER ${opponentNum})`;
+      }
     }
 
     /**
@@ -1273,7 +1316,89 @@
      */
     updateControlsForCall() {
       this.btnSelectNumber.textContent = 'Call Number';
-      this.turnPrompt.textContent = `Player ${this.currentPlayer}: Tap an unmarked tile to call`;
+      if (this.gameMode === 'online') {
+        this.turnPrompt.textContent = "Your Turn: Tap an unmarked tile, then click Call Number";
+      } else {
+        this.turnPrompt.textContent = `YOU (PLAYER ${this.currentPlayer}): Tap an unmarked tile to call`;
+      }
+    }
+
+    /**
+     * Update relative player labels for both Pass & Play and Online Multiplayer modes
+     * 
+     * Pass & Play (1 Phone):
+     *   - When Player 1 is active (currentPlayer === 1):
+     *       Player 1 card: "YOU (PLAYER 1)"
+     *       Player 2 card: "OPPONENT (PLAYER 2)"
+     *   - When Player 2 is active (currentPlayer === 2):
+     *       Player 1 card: "OPPONENT (PLAYER 1)"
+     *       Player 2 card: "YOU (PLAYER 2)"
+     * 
+     * Online Multiplayer:
+     *   - Current logged-in player (myPlayerNum): "YOU"
+     *   - Other player: "OPPONENT"
+     */
+    updatePlayerLabelsUI() {
+      let p1CardText = 'Player 1';
+      let p2CardText = 'Player 2';
+
+      if (this.gameMode === 'online') {
+        const myNum = this.myPlayerNum || (this.online ? this.online.playerNum : 1) || 1;
+        if (myNum === 1) {
+          p1CardText = 'YOU';
+          p2CardText = 'OPPONENT';
+        } else {
+          p1CardText = 'OPPONENT';
+          p2CardText = 'YOU';
+        }
+      } else {
+        // Pass & Play (1 Phone Mode)
+        if (this.currentPlayer === 1) {
+          p1CardText = 'YOU (PLAYER 1)';
+          p2CardText = 'OPPONENT (PLAYER 2)';
+        } else {
+          p1CardText = 'OPPONENT (PLAYER 1)';
+          p2CardText = 'YOU (PLAYER 2)';
+        }
+      }
+
+      // 1. Update Player 1 Card Name
+      if (this.p1PlayerName) {
+        this.p1PlayerName.textContent = p1CardText;
+      } else if (this.player1Card) {
+        const nameEl = this.player1Card.querySelector ? this.player1Card.querySelector('.player-name') : null;
+        if (nameEl) nameEl.textContent = p1CardText;
+      }
+
+      // 2. Update Player 2 Card Name
+      if (this.p2PlayerName) {
+        this.p2PlayerName.textContent = p2CardText;
+      } else if (this.player2Card) {
+        const nameEl = this.player2Card.querySelector ? this.player2Card.querySelector('.player-name') : null;
+        if (nameEl) nameEl.textContent = p2CardText;
+      }
+
+      // 3. Update 3D Board Header Tags
+      if (this.p1BoardTag) {
+        if (this.gameMode === 'online') {
+          const myNum = this.myPlayerNum || (this.online ? this.online.playerNum : 1) || 1;
+          const isMine = myNum === 1;
+          this.p1BoardTag.innerHTML = `<span class="tag-dot"></span> ${isMine ? 'Your Private Card' : "Opponent's Private Card"}`;
+        } else {
+          const isMe = this.currentPlayer === 1;
+          this.p1BoardTag.innerHTML = `<span class="tag-dot"></span> ${isMe ? "YOU (PLAYER 1)'s Private Card" : "OPPONENT (PLAYER 1)'s Private Card"}`;
+        }
+      }
+      if (this.p2BoardTag) {
+        if (this.gameMode === 'online') {
+          const myNum = this.myPlayerNum || (this.online ? this.online.playerNum : 1) || 1;
+          const isMine = myNum === 2;
+          this.p2BoardTag.innerHTML = `<span class="tag-dot"></span> ${isMine ? 'Your Private Card' : "Opponent's Private Card"}`;
+        } else {
+          const isMe = this.currentPlayer === 2;
+          this.p2BoardTag.innerHTML = `<span class="tag-dot"></span> ${isMe ? "YOU (PLAYER 2)'s Private Card" : "OPPONENT (PLAYER 2)'s Private Card"}`;
+        }
+      }
     }
 
     /**
@@ -1286,23 +1411,25 @@
       }
 
       const isP1 = this.currentPlayer === 1;
+      const oppNum = isP1 ? 2 : 1;
 
       // Player cards active highlight
       this.player1Card.classList.toggle('active-turn', isP1);
       this.player2Card.classList.toggle('active-turn', !isP1);
 
-      this.turnTrackerEl.textContent = isP1 ? 'P1 TURN' : 'P2 TURN';
+      this.turnTrackerEl.textContent = isP1 ? 'YOU (P1) TURN' : 'YOU (P2) TURN';
 
       // Turn indicator below board
       this.turnAvatar.textContent = isP1 ? 'P1' : 'P2';
       this.turnAvatar.classList.toggle('p2-avatar', !isP1);
 
       if (this.turnPhase === 'MARK_CALLED' && this.pendingCalledNumber !== null) {
-        const opponentNum = this.currentPlayer === 1 ? 2 : 1;
-        this.turnPrompt.textContent = `Player ${this.currentPlayer}: Mark the number called by Player ${opponentNum}`;
+        this.turnPrompt.textContent = `YOU (PLAYER ${this.currentPlayer}): Mark the number called by OPPONENT (PLAYER ${oppNum})`;
       } else {
-        this.turnPrompt.textContent = `Player ${this.currentPlayer}: Call a number verbally and tap it to mark`;
+        this.turnPrompt.textContent = `YOU (PLAYER ${this.currentPlayer}): Call a number verbally and tap it to mark`;
       }
+
+      this.updatePlayerLabelsUI();
     }
 
     /**
@@ -1318,25 +1445,27 @@
       this.p1LinesCountEl.textContent = `${p1Lines}/5`;
       this.p2LinesCountEl.textContent = `${p2Lines}/5`;
 
-      const pNum = this.gameMode === 'online' ? (this.online.playerNum || 1) : this.currentPlayer;
+      const pNum = this.gameMode === 'online' ? (this.myPlayerNum || 1) : this.currentPlayer;
       const activePlayer = this.players[pNum];
       if (activePlayer && this.activeLinesChip) {
         this.activeLinesChip.textContent = `${Math.min(5, activePlayer.completedLines.length)}/5`;
       }
+
+      this.updatePlayerLabelsUI();
     }
 
     /**
      * Update B-I-N-G-O letters rack above the board
-     * Strikes out completed lines (up to 5) with red ❌
+     * Strikes out completed lines (up to 5)
      */
     updateBingoLettersUI(targetPlayerNum) {
-      const pNum = targetPlayerNum || (this.gameMode === 'online' ? (this.online.playerNum || 1) : this.currentPlayer);
+      const pNum = targetPlayerNum || (this.gameMode === 'online' ? (this.myPlayerNum || 1) : this.currentPlayer);
       const activePlayer = this.players[pNum];
       const completedCount = activePlayer ? Math.min(5, activePlayer.completedLines.length) : 0;
 
       const rack = this.bingoRack || document.getElementById('bingoRack');
       if (rack) {
-        const letterBoxes = rack.querySelectorAll('.bingo-letter-box');
+        const letterBoxes = rack.querySelectorAll ? rack.querySelectorAll('.bingo-letter-box') : [];
         letterBoxes.forEach((box, index) => {
           if (index < completedCount) {
             box.classList.add('struck');
@@ -1353,7 +1482,8 @@
           if (this.gameMode === 'online') {
             rackLabel.textContent = `YOUR BINGO PROGRESS (${completedCount}/5)`;
           } else {
-            rackLabel.textContent = `PLAYER ${pNum} BINGO PROGRESS (${completedCount}/5)`;
+            const pLabel = pNum === this.currentPlayer ? `YOU (PLAYER ${pNum})` : `OPPONENT (PLAYER ${pNum})`;
+            rackLabel.textContent = `${pLabel} BINGO PROGRESS (${completedCount}/5)`;
           }
         }
       }
@@ -1365,23 +1495,22 @@
 
     /**
      * Status message banner helper
-     * Ensures only ONE emoji is displayed at the beginning of the banner (via this.statusIcon)
-     * and prevents duplicate or trailing emojis from template strings or inputs.
+     * Updates the status icon and text with clean SVG feedback
      */
     setStatus(msg, type = 'info') {
       this.statusBanner.className = 'status-message-banner';
       if (type === 'error') {
         this.statusBanner.classList.add('status-error');
-        this.statusIcon.textContent = '⚠️';
+        this.statusIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>';
       } else if (type === 'success') {
         this.statusBanner.classList.add('status-success');
-        this.statusIcon.textContent = '🎉';
+        this.statusIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>';
       } else {
         this.statusBanner.classList.add('status-flip');
-        this.statusIcon.textContent = '💡';
+        this.statusIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>';
       }
 
-      // Strip any leading or trailing emojis from text so only statusIcon displays the single leading emoji
+      // Strip any leading or trailing emojis from text so only statusIcon displays the clean SVG icon
       const cleanMsg = typeof msg === 'string'
         ? msg.replace(/^[\s\p{Extended_Pictographic}\uFE0F\u200D]+/gu, '')
              .replace(/[\s\p{Extended_Pictographic}\uFE0F\u200D]+$/gu, '')
@@ -1406,6 +1535,17 @@
       this.winnerModalP2Score.textContent = this.players[2].score;
       this.winnerModalP1Lines.textContent = `${this.players[1].completedLines.length} Lines`;
       this.winnerModalP2Lines.textContent = `${this.players[2].completedLines.length} Lines`;
+
+      if (this.winnerP1Label) {
+        this.winnerP1Label.textContent = winnerPlayerNum === 1 ? 'WINNER (PLAYER 1)' : 'RUNNER UP (PLAYER 1)';
+      }
+      if (this.winnerP2Label) {
+        this.winnerP2Label.textContent = winnerPlayerNum === 2 ? 'WINNER (PLAYER 2)' : 'RUNNER UP (PLAYER 2)';
+      }
+      if (this.tabReviewP1) this.tabReviewP1.textContent = 'Player 1';
+      if (this.tabReviewP2) this.tabReviewP2.textContent = 'Player 2';
+      if (this.p1ReviewCardName) this.p1ReviewCardName.textContent = 'Player 1 Review';
+      if (this.p2ReviewCardName) this.p2ReviewCardName.textContent = 'Player 2 Review';
 
       this.setStatus(`${winner.name} won the BINGO match!`, 'success');
 
@@ -1433,7 +1573,9 @@
         // 1. Status Tag (WINNER or LOSER)
         const statusTag = isP1 ? this.p1ReviewStatusTag : this.p2ReviewStatusTag;
         if (statusTag) {
-          statusTag.textContent = isWinner ? '🏆 WINNER' : 'LOSER';
+          statusTag.innerHTML = isWinner
+            ? '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>WINNER'
+            : 'LOSER';
           statusTag.className = `review-status-tag ${isWinner ? 'tag-winner' : 'tag-loser'}`;
         }
 
@@ -1498,7 +1640,7 @@
 
         if (chipsEl) {
           if (unmarkedNumbers.length === 0) {
-            chipsEl.innerHTML = '<span class="unmarked-empty-notice">All 25 numbers marked! 🎉</span>';
+            chipsEl.innerHTML = '<span class="unmarked-empty-notice">All 25 numbers marked!</span>';
           } else {
             chipsEl.innerHTML = unmarkedNumbers
               .map(num => `<span class="unmarked-num-chip">${num}</span>`)
@@ -2000,7 +2142,7 @@
         this.sound.playPop(600);
         if (this.btnCopyRoomCode) {
           const origHtml = this.btnCopyRoomCode.innerHTML;
-          this.btnCopyRoomCode.innerHTML = '<span>✅</span> Copied!';
+          this.btnCopyRoomCode.innerHTML = '<span class="btn-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Copied!';
           setTimeout(() => {
             this.btnCopyRoomCode.innerHTML = origHtml;
           }, 2000);
@@ -2048,7 +2190,7 @@
             this.sound.playPop(600);
             if (this.btnShareRoomLink) {
               const origHtml = this.btnShareRoomLink.innerHTML;
-              this.btnShareRoomLink.innerHTML = '<span>🔗</span> Link Copied!';
+              this.btnShareRoomLink.innerHTML = '<span class="btn-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Link Copied!';
               setTimeout(() => {
                 this.btnShareRoomLink.innerHTML = origHtml;
               }, 2000);
@@ -2129,6 +2271,7 @@
           this.sound.playPop(520);
           this.online.roomCode = data.roomCode;
           this.online.playerNum = 1;
+          this.myPlayerNum = 1;
           this.online.sessionToken = data.sessionToken;
           this.online.playerName = data.playerName;
           this.online.isHost = true;
@@ -2136,14 +2279,15 @@
           sessionStorage.setItem('bingo_session', JSON.stringify({
             roomCode: data.roomCode,
             sessionToken: data.sessionToken,
-            playerNum: 1
+            playerNum: 1,
+            myPlayerNum: 1
           }));
 
           // Update Lobby Modal UI
           this.lobbyRoomCode.textContent = data.roomCode;
           this.lobbyP1Name.textContent = `${data.playerName} (Host - You)`;
           this.lobbyP2Name.textContent = 'Player 2';
-          this.lobbyP2Status.textContent = '⏳ Waiting to join...';
+          this.lobbyP2Status.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Waiting to join...';
           this.lobbyP2Slot.classList.remove('connected');
           this.lobbyStatusPill.className = 'lobby-status-pill';
           this.lobbyStatusText.textContent = 'Waiting for Player 2 to join...';
@@ -2151,7 +2295,7 @@
           if (this.btnStartGame) {
             this.btnStartGame.style.display = 'block';
             this.btnStartGame.disabled = true;
-            this.btnStartGame.innerHTML = '<span>⏳</span> Waiting for Player 2...';
+            this.btnStartGame.innerHTML = '<span class="btn-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> Waiting for Player 2...';
           }
 
           this.lobbyModal.style.display = 'flex';
@@ -2162,7 +2306,7 @@
           this.sound.playPop(640);
           this.online.opponentName = data.playerName;
           this.lobbyP2Name.textContent = `${data.playerName}`;
-          this.lobbyP2Status.textContent = '🟢 Connected!';
+          this.lobbyP2Status.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Connected!';
           this.lobbyP2Slot.classList.add('connected');
           this.lobbyStatusPill.className = 'lobby-status-pill connected';
           this.lobbyStatusText.textContent = `${data.playerName} connected! Ready to start.`;
@@ -2170,7 +2314,7 @@
           if (this.btnStartGame) {
             this.btnStartGame.style.display = 'block';
             this.btnStartGame.disabled = false;
-            this.btnStartGame.innerHTML = '<span>▶</span> Start Game';
+            this.btnStartGame.innerHTML = '<span class="btn-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg></span> Start Game';
           }
           break;
         }
@@ -2179,6 +2323,7 @@
           this.sound.playPop(520);
           this.online.roomCode = data.roomCode;
           this.online.playerNum = 2;
+          this.myPlayerNum = 2;
           this.online.sessionToken = data.sessionToken;
           this.online.playerName = data.playerName;
           this.online.opponentName = data.hostName;
@@ -2187,7 +2332,8 @@
           sessionStorage.setItem('bingo_session', JSON.stringify({
             roomCode: data.roomCode,
             sessionToken: data.sessionToken,
-            playerNum: 2
+            playerNum: 2,
+            myPlayerNum: 2
           }));
 
           this.closeJoinModal();
@@ -2196,7 +2342,7 @@
           this.lobbyRoomCode.textContent = data.roomCode;
           this.lobbyP1Name.textContent = `${data.hostName} (Host)`;
           this.lobbyP2Name.textContent = `${data.playerName} (You)`;
-          this.lobbyP2Status.textContent = '🟢 Connected!';
+          this.lobbyP2Status.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Connected!';
           this.lobbyP2Slot.classList.add('connected');
           this.lobbyStatusPill.className = 'lobby-status-pill connected';
           this.lobbyStatusText.textContent = 'Connected! Waiting for host to start match...';
@@ -2216,11 +2362,12 @@
           if (data.status === 'WAITING') {
             this.online.roomCode = data.roomCode;
             this.online.playerNum = data.playerNum;
+            this.myPlayerNum = data.playerNum;
             this.online.isHost = data.playerNum === 1;
             this.lobbyRoomCode.textContent = data.roomCode;
             this.lobbyP1Name.textContent = `${data.playerName} (Host - You)`;
             this.lobbyP2Name.textContent = 'Player 2';
-            this.lobbyP2Status.textContent = '⏳ Waiting to join...';
+            this.lobbyP2Status.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Waiting to join...';
             this.lobbyP2Slot.classList.remove('connected');
             this.lobbyStatusPill.className = 'lobby-status-pill';
             this.lobbyStatusText.textContent = 'Waiting for Player 2 to join...';
@@ -2228,7 +2375,7 @@
             if (this.btnStartGame) {
               this.btnStartGame.style.display = data.playerNum === 1 ? 'block' : 'none';
               this.btnStartGame.disabled = true;
-              this.btnStartGame.innerHTML = '<span>⏳</span> Waiting for Player 2...';
+              this.btnStartGame.innerHTML = '<span class="btn-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> Waiting for Player 2...';
             }
 
             this.lobbyModal.style.display = 'flex';
@@ -2280,9 +2427,9 @@
           this.updateOnlineTurnUI();
           if (newlyCompleted.length > 0) {
             const letter = 'BINGO'[this.players[myNum].completedLines.length - 1];
-            this.setStatus(`🎉 Line Completed! Letter "${letter}" crossed out! Number ${data.number} marked. Tell your opponent ${data.number} verbally.`, 'success');
+            this.setStatus(`Line Completed! Letter "${letter}" crossed out! Number ${data.number} marked. Tell your opponent ${data.number} verbally.`, 'success');
           } else {
-            this.setStatus(`🎉 Number ${data.number} marked! (+1 Pt). Tell your opponent ${data.number} verbally and wait for them to mark it.`, 'success');
+            this.setStatus(`Number ${data.number} marked! (+1 Pt). Tell your opponent ${data.number} verbally and wait for them to mark it.`, 'success');
           }
           break;
         }
@@ -2339,9 +2486,9 @@
           this.updateOnlineTurnUI();
           if (newlyCompleted.length > 0) {
             const letter = 'BINGO'[this.players[myNum].completedLines.length - 1];
-            this.setStatus(`🎉 Line Completed! Letter "${letter}" crossed out! Now choose an unmarked tile to call your number.`, 'success');
+            this.setStatus(`Line Completed! Letter "${letter}" crossed out! Now choose an unmarked tile to call your number.`, 'success');
           } else {
-            this.setStatus(`🎉 Number ${data.number} marked! (+1 Pt). Now choose an unmarked tile to call your number.`, 'success');
+            this.setStatus(`Number ${data.number} marked! (+1 Pt). Now choose an unmarked tile to call your number.`, 'success');
           }
           break;
         }
@@ -2408,6 +2555,7 @@
       this.gameActive = true;
       this.online.roomCode = data.roomCode;
       this.online.playerNum = data.playerNum;
+      this.myPlayerNum = data.playerNum;
       this.online.playerName = data.playerName;
       this.online.opponentName = data.opponentName;
       this.online.myBoard = data.myBoard;
@@ -2421,7 +2569,7 @@
       const oppNum = myNum === 1 ? 2 : 1;
 
       this.players[myNum] = {
-        name: `${data.playerName} (You)`,
+        name: 'YOU',
         board: data.myBoard,
         marked: [...this.online.myMarked],
         score: myNum === 1 ? (data.p1Score || 0) : (data.p2Score || 0),
@@ -2430,7 +2578,7 @@
       };
 
       this.players[oppNum] = {
-        name: data.opponentName || `Player ${oppNum}`,
+        name: 'OPPONENT',
         board: [],
         marked: new Array(25).fill(false),
         score: oppNum === 1 ? (data.p1Score || 0) : (data.p2Score || 0),
@@ -2458,6 +2606,7 @@
       this.updateScoresUI();
       this.updateBingoLettersUI();
       this.updateOnlineTurnUI();
+      this.updatePlayerLabelsUI();
 
       this.sound.playPop(520);
     }
@@ -2578,7 +2727,7 @@
     }
 
     updateOnlineTurnUI() {
-      const myNum = this.online.playerNum;
+      const myNum = this.myPlayerNum || (this.online ? this.online.playerNum : 1) || 1;
       const isMyTurn = this.currentPlayer === myNum;
 
       if (this.turnAvatar) {
@@ -2587,7 +2736,7 @@
       }
 
       if (this.turnTrackerEl) {
-        this.turnTrackerEl.textContent = this.currentPlayer === 1 ? 'P1 TURN' : 'P2 TURN';
+        this.turnTrackerEl.textContent = isMyTurn ? 'YOUR TURN' : 'OPPONENT TURN';
       }
 
       if (this.player1Card && this.player2Card) {
@@ -2619,23 +2768,44 @@
         const lines = this.players[myNum].completedLines.length;
         this.activeLinesChip.textContent = `${Math.min(5, lines)}/5`;
       }
+
+      this.updatePlayerLabelsUI();
     }
 
     handleOnlineGameOver(data) {
       this.gameActive = false;
-      const myNum = this.online.playerNum;
+      const myNum = this.myPlayerNum || (this.online ? this.online.playerNum : 1) || 1;
       const winnerNum = data.winnerNum || data.winnerPlayer || 1;
       const didIWin = winnerNum === myNum;
+      const winnerName = data.winnerName || (winnerNum === 1 ? 'Player 1' : 'Player 2');
 
       if (didIWin) {
         this.sound.playVictory();
         this.confetti.start();
+        this.winnerTitle.textContent = 'YOU WIN!';
       } else {
         this.sound.playError();
+        this.winnerTitle.textContent = 'OPPONENT WINS!';
       }
 
-      const winnerName = data.winnerName || (winnerNum === 1 ? 'Player 1' : 'Player 2');
-      this.winnerTitle.textContent = `${winnerName.toUpperCase()} WINS!`;
+      if (this.winnerP1Label) {
+        this.winnerP1Label.textContent = myNum === 1 ? 'YOU' : 'OPPONENT';
+      }
+      if (this.winnerP2Label) {
+        this.winnerP2Label.textContent = myNum === 2 ? 'YOU' : 'OPPONENT';
+      }
+      if (this.tabReviewP1) {
+        this.tabReviewP1.textContent = myNum === 1 ? 'You' : 'Opponent';
+      }
+      if (this.tabReviewP2) {
+        this.tabReviewP2.textContent = myNum === 2 ? 'You' : 'Opponent';
+      }
+      if (this.p1ReviewCardName) {
+        this.p1ReviewCardName.textContent = myNum === 1 ? 'Your Review' : 'Opponent Review';
+      }
+      if (this.p2ReviewCardName) {
+        this.p2ReviewCardName.textContent = myNum === 2 ? 'Your Review' : 'Opponent Review';
+      }
 
       const p1Review = data.p1Review || (data.review && {
         score: data.review.p1.score,
@@ -2677,7 +2847,9 @@
 
         const statusTag = isP1 ? this.p1ReviewStatusTag : this.p2ReviewStatusTag;
         if (statusTag) {
-          statusTag.textContent = isWinner ? '🏆 WINNER' : 'LOSER';
+          statusTag.innerHTML = isWinner
+            ? '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>WINNER'
+            : 'LOSER';
           statusTag.className = `review-status-tag ${isWinner ? 'tag-winner' : 'tag-loser'}`;
         }
 
@@ -2729,7 +2901,7 @@
 
         if (chipsEl) {
           if (data.unmarkedNumbers.length === 0) {
-            chipsEl.innerHTML = '<span class="unmarked-empty-notice">All 25 numbers marked! 🎉</span>';
+            chipsEl.innerHTML = '<span class="unmarked-empty-notice">All 25 numbers marked!</span>';
           } else {
             chipsEl.innerHTML = data.unmarkedNumbers
               .map(num => `<span class="unmarked-num-chip">${num}</span>`)
@@ -2812,13 +2984,13 @@
 
         if (result.success) {
           this.sound.playVictory();
-          this.showSettingsFeedback('✅ Connection successful! Database and RLS policies verified.', true);
+          this.showSettingsFeedback('Connection successful! Database and RLS policies verified.', true);
           if (this.backendStatusLabel) {
             this.backendStatusLabel.textContent = 'Active: Supabase Cloud (PostgreSQL & Realtime)';
           }
         } else {
           this.sound.playError();
-          this.showSettingsFeedback(`❌ ${result.error}`, false);
+          this.showSettingsFeedback(result.error, false);
         }
       } else {
         this.showSettingsFeedback('Supabase client library not loaded. Check internet connection.', false);
@@ -2834,12 +3006,12 @@
         if (window.BingoSupabase) {
           window.BingoSupabase.setCredentials(url, key);
         }
-        this.showSettingsFeedback('✅ Settings saved! BINGO is configured for Supabase cloud.', true);
+        this.showSettingsFeedback('Settings saved! BINGO is configured for Supabase cloud.', true);
         if (this.backendStatusLabel) {
           this.backendStatusLabel.textContent = 'Active: Supabase Cloud (PostgreSQL & Realtime)';
         }
       } else {
-        this.showSettingsFeedback('⚠️ URL or Anon Key is empty. Defaulting to local WebSocket.', false);
+        this.showSettingsFeedback('URL or Anon Key is empty. Defaulting to local WebSocket.', false);
       }
     }
 

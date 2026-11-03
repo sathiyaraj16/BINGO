@@ -6,6 +6,7 @@
  */
 
 const fs = require('fs');
+const path = require('path');
 const assert = require('assert');
 
 // Mock browser environment
@@ -80,7 +81,10 @@ class MockElement {
   }
 }
 
-const html = fs.readFileSync('index.html', 'utf8');
+const htmlPath = fs.existsSync(path.join(__dirname, '..', 'index.html'))
+  ? path.join(__dirname, '..', 'index.html')
+  : path.join(process.cwd(), 'index.html');
+const html = fs.readFileSync(htmlPath, 'utf8');
 const idMatches = [...html.matchAll(/id=["']([^"']+)["']/g)].map(m => m[1]);
 const elementsById = {};
 idMatches.forEach(id => {
@@ -148,7 +152,7 @@ global.document = {
 };
 
 // Load script.js
-require('./script.js');
+require('../script.js');
 
 console.log('--- Starting BINGO Letter Crossing System Tests ---');
 

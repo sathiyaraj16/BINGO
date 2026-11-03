@@ -7,7 +7,7 @@ const PORT = 3457;
 process.env.PORT = PORT;
 process.env.HOST = '127.0.0.1';
 
-require('./server.js');
+require('../server.js');
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

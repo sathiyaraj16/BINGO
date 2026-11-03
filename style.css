@@ -338,6 +338,21 @@ html, body {
   border-radius: 14px;
 }
 
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.btn-icon svg,
+svg.btn-icon {
+  display: block;
+  flex-shrink: 0;
+  stroke-width: 2px;
+}
+
 .btn-online-create {
   background: linear-gradient(180deg, #10b981, #059669);
   color: #fff;
@@ -567,6 +582,14 @@ html, body {
 
 .disconnect-icon {
   font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.disconnect-icon svg {
+  display: block;
 }
 
 /* Score Cards Container */
@@ -670,9 +693,10 @@ html, body {
 }
 
 .player-name {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.2;
+  letter-spacing: -0.2px;
 }
 
 .player-score-badge {
@@ -1310,6 +1334,17 @@ html, body {
   transition: all 0.2s ease;
 }
 
+.status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.status-icon svg {
+  display: block;
+}
+
 .status-message-banner.status-error {
   background: #fef2f2;
   border-color: #fecaca;
@@ -1365,6 +1400,18 @@ html, body {
   font-weight: 800;
   color: #334155;
   box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.chip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--tile-orange-mid);
+}
+
+.chip-icon svg {
+  display: block;
 }
 
 .chip-val {
@@ -1479,8 +1526,15 @@ html, body {
 }
 
 .trophy-emoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 68px;
   animation: trophyFloat 2.2s ease-in-out infinite alternate;
+}
+
+.trophy-svg {
+  filter: drop-shadow(0 6px 16px rgba(234, 179, 8, 0.45));
 }
 
 @keyframes trophyFloat {
@@ -1905,6 +1959,14 @@ html, body {
 
 .unmarked-badge-icon {
   font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.unmarked-badge-icon svg {
+  display: block;
 }
 
 .unmarked-label {
@@ -2172,6 +2234,14 @@ html, body {
   font-size: 11px;
   font-weight: 700;
   color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.slot-status-text svg {
+  flex-shrink: 0;
 }
 
 .join-input-group {
@@ -2372,6 +2442,11 @@ html, body {
   .game-panel {
     border-radius: 28px;
     padding: 16px 12px 14px 12px;
+  }
+
+  .player-name {
+    font-size: 10.5px;
+    letter-spacing: -0.3px;
   }
 
   .bingo-grid {

@@ -3,6 +3,7 @@
  * Tests every single button on Home, Game, Lobby, Join, Settings, and Modals.
  */
 const fs = require('fs');
+const path = require('path');
 const http = require('http');
 
 // Setup mock window & document
@@ -30,7 +31,10 @@ class MockAudioContext {
 }
 
 // Read index.html and extract all IDs
-const html = fs.readFileSync('index.html', 'utf8');
+const htmlPath = fs.existsSync(path.join(__dirname, '..', 'index.html'))
+  ? path.join(__dirname, '..', 'index.html')
+  : path.join(process.cwd(), 'index.html');
+const html = fs.readFileSync(htmlPath, 'utf8');
 
 // Lightweight DOM element class
 class MockElement {
@@ -161,7 +165,7 @@ global.confirm = () => true;
 
 // Load script.js
 console.log('--- Running Automated Button & Listener Audit ---');
-require('./script.js');
+require('../script.js');
 
 setTimeout(() => {
   try {
